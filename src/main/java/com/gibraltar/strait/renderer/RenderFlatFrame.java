@@ -37,7 +37,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import com.gibraltar.strait.entity.item.EntityFlatFrame;
 
 @SideOnly(Side.CLIENT)
-public class RenderFlatFrame extends Render<EntityItemFrame>
+public class RenderFlatFrame extends Render<EntityFlatFrame>
 {
     private static final ResourceLocation MAP_BACKGROUND_TEXTURES = new ResourceLocation("textures/map/map_background.png");
     private final Minecraft mc = Minecraft.getMinecraft();
@@ -51,16 +51,14 @@ public class RenderFlatFrame extends Render<EntityItemFrame>
         this.itemRenderer = mc.getRenderItem();
     }
 
-    public void doRender(EntityItemFrame entity, double x, double y, double z, float entityYaw, float partialTicks)
+    public void doRender(EntityFlatFrame entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
-        FMLLog.info("render flat frame");
         GlStateManager.pushMatrix();
         BlockPos blockpos = entity.getHangingPosition();
         double d0 = (double)blockpos.getX() - entity.posX + x;
         double d1 = (double)blockpos.getY() - entity.posY + y;
         double d2 = (double)blockpos.getZ() - entity.posZ + z;
         GlStateManager.translate(d0 + 0.5D, d1 + 0.5D, d2 + 0.5D);
-        //GlStateManager.rotate(180.0F - entity.rotationYaw, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(90.0F, 1.0F, 0.0F, 0.0F);
         this.renderManager.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         BlockRendererDispatcher blockrendererdispatcher = this.mc.getBlockRendererDispatcher();
@@ -97,16 +95,17 @@ public class RenderFlatFrame extends Render<EntityItemFrame>
         GlStateManager.translate(0.0F, 0.0F, 0.4375F);
         this.renderItem(entity);
         GlStateManager.popMatrix();
+        FMLLog.info("rendering flat frame: " + entity + ", dir: " + entity.facingDirection);
         this.renderName(entity, x + (double)((float)entity.facingDirection.getFrontOffsetX() * 0.3F), y - 0.25D, z + (double)((float)entity.facingDirection.getFrontOffsetZ() * 0.3F));
     }
 
     @Nullable
-    protected ResourceLocation getEntityTexture(EntityItemFrame entity)
+    protected ResourceLocation getEntityTexture(EntityFlatFrame entity)
     {
         return null;
     }
 
-    private void renderItem(EntityItemFrame itemFrame)
+    private void renderItem(EntityFlatFrame itemFrame)
     {
         ItemStack itemstack = itemFrame.getDisplayedItem();
 
@@ -161,7 +160,7 @@ public class RenderFlatFrame extends Render<EntityItemFrame>
         }
     }
 
-    protected void renderName(EntityItemFrame entity, double x, double y, double z)
+    protected void renderName(EntityFlatFrame entity, double x, double y, double z)
     {
         if (Minecraft.isGuiEnabled() && !entity.getDisplayedItem().isEmpty() && entity.getDisplayedItem().hasDisplayName() && this.renderManager.pointedEntity == entity)
         {

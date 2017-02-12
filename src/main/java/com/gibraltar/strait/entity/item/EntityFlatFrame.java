@@ -1,23 +1,29 @@
 package com.gibraltar.strait.entity.item;
 
+import io.netty.buffer.ByteBuf;
+
 import net.minecraft.entity.item.EntityItemFrame;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import org.apache.commons.lang3.Validate;
 
-public class EntityFlatFrame extends EntityItemFrame
+public class EntityFlatFrame extends EntityItemFrame implements IEntityAdditionalSpawnData
 {
     public EntityFlatFrame(World worldIn)
     {
         super(worldIn);
+        FMLLog.info("new flat frame in world");
     }
 
     public EntityFlatFrame(World worldIn, BlockPos pos, EnumFacing facing)
     {
         super(worldIn, pos, facing);
+        FMLLog.info("new flat frame: " + facing);
     }
 
     private double offs(int i)
@@ -29,6 +35,7 @@ public class EntityFlatFrame extends EntityItemFrame
     protected void updateFacingWithBoundingBox(EnumFacing facingDirectionIn)
     {
         Validate.notNull(facingDirectionIn);
+        FMLLog.info("facingDirection: " + facingDirectionIn);
         this.facingDirection = facingDirectionIn;
         this.rotationYaw = facingDirection.getAxis() == EnumFacing.Axis.Y ? 0 : (float)(this.facingDirection.getHorizontalIndex() * 90);
         this.prevRotationYaw = this.rotationYaw;
@@ -54,7 +61,8 @@ public class EntityFlatFrame extends EntityItemFrame
         {
             return;
         }
-        else if (this.facingDirection.getAxis() == EnumFacing.Axis.Y) {
+        else if (this.facingDirection.getAxis() == EnumFacing.Axis.Y)
+        {
             double d0 = (double)this.hangingPosition.getX() + 0.5D;
             double d1 = (double)this.hangingPosition.getY() + 0.5D;
             double d2 = (double)this.hangingPosition.getZ() + 0.5D;
@@ -97,4 +105,32 @@ public class EntityFlatFrame extends EntityItemFrame
         }
     }
 
+    @Override
+    public void setEntityBoundingBox(AxisAlignedBB bb)
+    {
+        super.setEntityBoundingBox(bb);
+        FMLLog.info("flat frame bb: " + getEntityBoundingBox());
+    }
+
+    public void writeEntityToNBT(NBTTagCompound compound)
+    {
+        super.writeEntityToNBT(compound);
+        compound.setByte("Facing", (byte)this.facingDirection.getIndex());
+    }
+
+    public void readEntityFromNBT(NBTTagCompound compound)
+    {
+        super.readEntityFromNBT(compound);
+        this.updateFacingWithBoundingBox(EnumFacing.getFront(compound.getByte("Facing")));
+    }
+
+    @Override
+	public void writeSpawnData(ByteBuf buffer) {
+		buffer.writeShort(facingDirection.getIndex());
+	}
+
+	@Override
+	public void readSpawnData(ByteBuf additionalData) {
+		updateFacingWithBoundingBox(EnumFacing.getFront(additionalData.readShort()));
+	}
 }

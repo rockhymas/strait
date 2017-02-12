@@ -11,7 +11,9 @@ package com.gibraltar.strait.feature;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -20,6 +22,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import com.gibraltar.strait.entity.item.EntityFlatFrame;
 import com.gibraltar.strait.items.ItemFlatFrame;
 import com.gibraltar.strait.renderer.RenderFlatFrameFactory;
+import com.gibraltar.strait.strait;
 
 public class FrameFeature extends Feature {
     public static Item flatFrame;
@@ -28,12 +31,13 @@ public class FrameFeature extends Feature {
 	public void preInit(FMLPreInitializationEvent event) {
 		super.preInit(event);
 		flatFrame = new ItemFlatFrame();
+        EntityRegistry.registerModEntity(new ResourceLocation("strait:flat_frame"), EntityFlatFrame.class, "strait:flat_frame", 1, strait.instance, 256, 64, false);
 	}
 
     @Override
 	public void preInitClient(FMLPreInitializationEvent event) {
 		super.preInitClient(event);
         ModelLoader.setCustomModelResourceLocation(flatFrame, 0, new ModelResourceLocation("strait:flat_frame", "inventory"));
-        RenderingRegistry.registerEntityRenderingHandler(EntityItemFrame.class, new RenderFlatFrameFactory());
+        RenderingRegistry.registerEntityRenderingHandler(EntityFlatFrame.class, new RenderFlatFrameFactory());
 	}
 }

@@ -63,10 +63,11 @@ public class ItemFlatFrame extends Item
                 {
                     FMLLog.info("play sound, spawn entity");
                     entityhanging.playPlaceSound();
+                    FMLLog.info("entity class: " + entityhanging.getClass());
                     worldIn.spawnEntity(entityhanging);
                 }
 
-                itemstack.shrink(1);
+                //itemstack.shrink(1);
             }
 
             return EnumActionResult.SUCCESS;
