@@ -50,9 +50,9 @@ public class ItemFlatFrame extends Item
 
         FMLLog.info("onItemUse");
         FMLLog.info("blockpos: " + blockpos);
-        if (facing != EnumFacing.DOWN && facing != EnumFacing.UP && player.canPlayerEdit(blockpos, facing, itemstack))
+        if (player.canPlayerEdit(blockpos, facing, itemstack))
         {
-            EntityHanging entityhanging = new EntityFlatFrame(worldIn, pos, facing);
+            EntityHanging entityhanging = new EntityFlatFrame(worldIn, blockpos, facing);
             FMLLog.info("facing a side, bounding box: " + entityhanging.getEntityBoundingBox());
 
             FMLLog.info("other blocks: " + worldIn.getCollisionBoxes(entityhanging, entityhanging.getEntityBoundingBox()).isEmpty());
