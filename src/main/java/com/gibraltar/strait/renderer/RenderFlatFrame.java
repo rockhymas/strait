@@ -27,6 +27,7 @@ import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.storage.MapData;
@@ -59,7 +60,7 @@ public class RenderFlatFrame extends Render<EntityFlatFrame>
         double d1 = (double)blockpos.getY() - entity.posY + y;
         double d2 = (double)blockpos.getZ() - entity.posZ + z;
         GlStateManager.translate(d0 + 0.5D, d1 + 0.5D, d2 + 0.5D);
-        GlStateManager.rotate(90.0F, 1.0F, 0.0F, 0.0F);
+        GlStateManager.rotate(entity.facingDirection == EnumFacing.DOWN ? -90.0F : 90.0F, 1.0F, 0.0F, 0.0F);
         this.renderManager.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         BlockRendererDispatcher blockrendererdispatcher = this.mc.getBlockRendererDispatcher();
         ModelManager modelmanager = blockrendererdispatcher.getBlockModelShapes().getModelManager();
@@ -96,7 +97,10 @@ public class RenderFlatFrame extends Render<EntityFlatFrame>
         this.renderItem(entity);
         GlStateManager.popMatrix();
         FMLLog.info("rendering flat frame: " + entity + ", dir: " + entity.facingDirection);
-        this.renderName(entity, x + (double)((float)entity.facingDirection.getFrontOffsetX() * 0.3F), y - 0.25D, z + (double)((float)entity.facingDirection.getFrontOffsetZ() * 0.3F));
+        this.renderName(entity,
+            x + (double)((float)entity.facingDirection.getFrontOffsetX() * 0.3F),
+            y - (entity.facingDirection == EnumFacing.DOWN ? 1.25D : 0.25D),
+            z + (double)((float)entity.facingDirection.getFrontOffsetZ() * 0.3F));
     }
 
     @Nullable
