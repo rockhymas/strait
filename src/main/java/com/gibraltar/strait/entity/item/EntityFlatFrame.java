@@ -1,16 +1,23 @@
 package com.gibraltar.strait.entity.item;
 
 import io.netty.buffer.ByteBuf;
+import org.apache.commons.lang3.Validate;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItemFrame;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemMap;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.storage.MapData;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import org.apache.commons.lang3.Validate;
+
+import com.gibraltar.strait.feature.FrameFeature;
 
 public class EntityFlatFrame extends EntityItemFrame implements IEntityAdditionalSpawnData
 {
@@ -104,6 +111,48 @@ public class EntityFlatFrame extends EntityItemFrame implements IEntityAdditiona
             super.updateBoundingBox();
         }
     }
+
+    @Override
+	public void dropItemOrSelf(Entity entityIn, boolean p_146065_2_)
+    {
+		if(!p_146065_2_)
+        {
+			super.dropItemOrSelf(entityIn, p_146065_2_);
+			return;
+		}
+
+		if (getEntityWorld().getGameRules().getBoolean("doEntityDrops"))
+        {
+			ItemStack itemstack = getDisplayedItem();
+
+			if (entityIn instanceof EntityPlayer)
+            {
+				EntityPlayer entityplayer = (EntityPlayer)entityIn;
+
+				if (entityplayer.capabilities.isCreativeMode)
+                {
+					removeFrameFromMap(itemstack);
+					return;
+				}
+			}
+
+            entityDropItem(new ItemStack(FrameFeature.flatFrame, 1), 0.0F);
+		}
+	}
+
+	private void removeFrameFromMap(ItemStack stack)
+    {
+		if(!stack.isEmpty())
+        {
+			if(stack.getItem() instanceof ItemMap)
+            {
+				MapData mapdata = ((ItemMap) stack.getItem()).getMapData(stack, getEntityWorld());
+				mapdata.mapDecorations.remove("frame-" + getEntityId());
+			}
+
+			stack.setItemFrame((EntityItemFrame) null);
+		}
+	}
 
     @Override
     public void setEntityBoundingBox(AxisAlignedBB bb)
