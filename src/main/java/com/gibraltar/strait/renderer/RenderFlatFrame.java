@@ -96,7 +96,6 @@ public class RenderFlatFrame extends Render<EntityFlatFrame>
         GlStateManager.translate(0.0F, 0.0F, 0.4375F);
         this.renderItem(entity);
         GlStateManager.popMatrix();
-        FMLLog.info("rendering flat frame: " + entity + ", dir: " + entity.facingDirection);
         this.renderName(entity,
             x + (double)((float)entity.facingDirection.getFrontOffsetX() * 0.3F),
             y - (entity.facingDirection == EnumFacing.DOWN ? 1.25D : 0.25D),

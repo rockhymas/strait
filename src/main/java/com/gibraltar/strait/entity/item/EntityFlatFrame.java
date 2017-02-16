@@ -24,13 +24,12 @@ public class EntityFlatFrame extends EntityItemFrame implements IEntityAdditiona
     public EntityFlatFrame(World worldIn)
     {
         super(worldIn);
-        FMLLog.info("new flat frame in world");
     }
 
     public EntityFlatFrame(World worldIn, BlockPos pos, EnumFacing facing)
     {
         super(worldIn, pos, facing);
-        FMLLog.info("new flat frame: " + facing);
+        this.setSize(0.5F, 0.03125F);
     }
 
     private double offs(int i)
@@ -42,9 +41,9 @@ public class EntityFlatFrame extends EntityItemFrame implements IEntityAdditiona
     protected void updateFacingWithBoundingBox(EnumFacing facingDirectionIn)
     {
         Validate.notNull(facingDirectionIn);
-        FMLLog.info("facingDirection: " + facingDirectionIn);
         this.facingDirection = facingDirectionIn;
         this.rotationYaw = facingDirection.getAxis() == EnumFacing.Axis.Y ? 0 : (float)(this.facingDirection.getHorizontalIndex() * 90);
+        this.rotationPitch = facingDirection == EnumFacing.UP ? -90.0F : 90.0F;
         this.prevRotationYaw = this.rotationYaw;
         this.updateBoundingBox();
     }
@@ -73,37 +72,20 @@ public class EntityFlatFrame extends EntityItemFrame implements IEntityAdditiona
             double d0 = (double)this.hangingPosition.getX() + 0.5D;
             double d1 = (double)this.hangingPosition.getY() + 0.5D;
             double d2 = (double)this.hangingPosition.getZ() + 0.5D;
-            double d4 = this.offs(this.getWidthPixels());
-            d0 = d0 - (double)this.facingDirection.getFrontOffsetX() * 0.46875D;
             d1 = d1 - (double)this.facingDirection.getFrontOffsetY() * 0.46875D;
-            d2 = d2 - (double)this.facingDirection.getFrontOffsetZ() * 0.46875D;
-            FMLLog.info("d0: " + d0 + ", " +
-                        "d1: " + d1 + ", " +
-                        "d2: " + d2 + ", ");
 
-            // EnumFacing enumfacing = EnumFacing.EAST;
-            // d0 = d0 + d4 * (double)enumfacing.getFrontOffsetX();
-            // d2 = d2 + d4 * (double)enumfacing.getFrontOffsetZ();
-            // d1 = d1 + d4 * (double)enumfacing.getFrontOffsetY();
-            this.posX = d0;
-            this.posY = d1;
-            this.posZ = d2;
             double d6 = (double)this.getHeightPixels();
-            double d7 = (double)this.getWidthPixels();
+            double d7 = -(double)this.facingDirection.getFrontOffsetY();
             double d8 = (double)this.getHeightPixels();
-
-            d7 = 1.0D;
 
             d6 = d6 / 32.0D;
             d7 = d7 / 32.0D;
             d8 = d8 / 32.0D;
-            FMLLog.info("d0: " + d0 + ", " +
-                        "d1: " + d1 + ", " +
-                        "d2: " + d2 + ", " +
-                        "d6: " + d6 + ", " +
-                        "d7: " + d7 + ", " +
-                        "d8: " + d8 + ", "
-                        );
+
+            this.posX = d0;
+            this.posY = d1 - d7;
+            this.posZ = d2;
+            this.height = 1.0F / 16.0F;
             this.setEntityBoundingBox(new AxisAlignedBB(d0 - d6, d1 - d7, d2 - d8, d0 + d6, d1 + d7, d2 + d8));
         }
         else
@@ -158,7 +140,6 @@ public class EntityFlatFrame extends EntityItemFrame implements IEntityAdditiona
     public void setEntityBoundingBox(AxisAlignedBB bb)
     {
         super.setEntityBoundingBox(bb);
-        FMLLog.info("flat frame bb: " + getEntityBoundingBox());
     }
 
     public void writeEntityToNBT(NBTTagCompound compound)

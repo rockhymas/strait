@@ -18,7 +18,6 @@ import com.gibraltar.strait.entity.item.EntityFlatFrame;
 
 public class RenderFlatFrameFactory implements IRenderFactory<EntityFlatFrame> {
     public Render<EntityFlatFrame> createRenderFor(RenderManager manager) {
-        FMLLog.info("creating flat frame renderer");
         return new RenderFlatFrame(manager);
     }
 }

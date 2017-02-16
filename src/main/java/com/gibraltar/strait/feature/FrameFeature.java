@@ -9,15 +9,27 @@
 package com.gibraltar.strait.feature;
 
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.entity.EntityHanging;
 import net.minecraft.entity.item.EntityItemFrame;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import com.gibraltar.strait.entity.item.EntityFlatFrame;
 import com.gibraltar.strait.items.ItemFlatFrame;
@@ -40,4 +52,57 @@ public class FrameFeature extends Feature {
         ModelLoader.setCustomModelResourceLocation(flatFrame, 0, new ModelResourceLocation("strait:flat_frame", "inventory"));
         RenderingRegistry.registerEntityRenderingHandler(EntityFlatFrame.class, new RenderFlatFrameFactory());
 	}
+
+    @Override
+    protected boolean hasSubscriptions() {
+        return true;
+    } 
+
+    @SubscribeEvent
+    public void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
+        ItemStack itemstack = event.getItemStack();
+        EnumFacing facing = event.getFace();
+        BlockPos blockpos = event.getPos().offset(facing);
+        World world = event.getWorld();
+        EntityPlayer player = event.getEntityPlayer();
+
+        FMLLog.info("on right click");
+        if (event.getSide() == Side.CLIENT) {
+            return;
+        }
+
+        FMLLog.info("on server side");
+        if (!player.canPlayerEdit(blockpos, facing, itemstack)) {
+            return;
+        }
+
+        FMLLog.info("player can edit");
+        if (facing.getAxis() != EnumFacing.Axis.Y) {
+            return;
+        }
+
+        FMLLog.info("facing up or down");
+        if (itemstack.getItem() != Items.ITEM_FRAME) {
+            return;
+        }
+
+        FMLLog.info("item is item frame");
+        EntityHanging entityhanging = new EntityFlatFrame(world, blockpos, facing);
+        FMLLog.info("facing a side, bounding box: " + entityhanging.getEntityBoundingBox());
+
+        FMLLog.info("other blocks: " + world.getCollisionBoxes(entityhanging, entityhanging.getEntityBoundingBox()).isEmpty());
+        if (entityhanging != null && entityhanging.onValidSurface())
+        {
+            FMLLog.info("valid surface");
+            if (!world.isRemote)
+            {
+                FMLLog.info("play sound, spawn entity");
+                entityhanging.playPlaceSound();
+                FMLLog.info("entity class: " + entityhanging.getClass());
+                world.spawnEntity(entityhanging);
+            }
+
+            itemstack.shrink(1);
+        }
+    }
 }

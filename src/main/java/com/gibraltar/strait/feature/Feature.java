@@ -14,6 +14,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.FMLLog;
 
 public class Feature {
 	public boolean enabled;
@@ -24,7 +25,9 @@ public class Feature {
     }
 
 	public void preInit(FMLPreInitializationEvent event) {
+		FMLLog.info("pre init");
 		if (hasSubscriptions()) {
+			FMLLog.info("subscribing!");
 			MinecraftForge.EVENT_BUS.register(this);
 		}
 	}
