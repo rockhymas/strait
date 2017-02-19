@@ -70,10 +70,8 @@ public class EntityFlatFrame extends EntityItemFrame implements IEntityAdditiona
     public boolean onValidSurface()
     {
         if (this.realFacingDirection.getAxis() == EnumFacing.Axis.Y) {
-            FMLLog.info("valid? axis is Y");
             if (!this.world.getCollisionBoxes(this, this.getEntityBoundingBox()).isEmpty())
             {
-                FMLLog.info("valid? No, there are blocks in the way");
                 return false;
             }
             else
@@ -81,17 +79,12 @@ public class EntityFlatFrame extends EntityItemFrame implements IEntityAdditiona
                 BlockPos blockpos = this.hangingPosition.offset(this.realFacingDirection.getOpposite());
                 IBlockState iblockstate = this.world.getBlockState(blockpos);
                 if (!iblockstate.isSideSolid(this.world, blockpos, this.realFacingDirection))
-                {
-                    FMLLog.info("valid? No, side isn't solid");
-                    
+                {                    
                     if (!iblockstate.getMaterial().isSolid() && !BlockRedstoneDiode.isDiode(iblockstate)) {
                         return false;
                     }
                 }
 
-
-
-                FMLLog.info("valid? " + this.world.getEntitiesInAABBexcluding(this, this.getEntityBoundingBox(), IS_HANGING_ENTITY).isEmpty());
                 return this.world.getEntitiesInAABBexcluding(this, this.getEntityBoundingBox(), IS_HANGING_ENTITY).isEmpty();
             }
         }
