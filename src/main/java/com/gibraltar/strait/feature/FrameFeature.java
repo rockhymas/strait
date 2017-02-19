@@ -32,24 +32,20 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import com.gibraltar.strait.entity.item.EntityFlatFrame;
-import com.gibraltar.strait.items.ItemFlatFrame;
 import com.gibraltar.strait.renderer.RenderFlatFrameFactory;
 import com.gibraltar.strait.strait;
 
 public class FrameFeature extends Feature {
-    public static Item flatFrame;
 
     @Override
 	public void preInit(FMLPreInitializationEvent event) {
 		super.preInit(event);
-		flatFrame = new ItemFlatFrame();
         EntityRegistry.registerModEntity(new ResourceLocation("strait:flat_frame"), EntityFlatFrame.class, "strait:flat_frame", 1, strait.instance, 256, 64, false);
 	}
 
     @Override
 	public void preInitClient(FMLPreInitializationEvent event) {
 		super.preInitClient(event);
-        ModelLoader.setCustomModelResourceLocation(flatFrame, 0, new ModelResourceLocation("strait:flat_frame", "inventory"));
         RenderingRegistry.registerEntityRenderingHandler(EntityFlatFrame.class, new RenderFlatFrameFactory());
 	}
 

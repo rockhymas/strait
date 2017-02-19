@@ -1,11 +1,18 @@
 package com.gibraltar.strait.entity.item;
 
+import com.google.common.base.Predicate;
 import io.netty.buffer.ByteBuf;
+import javax.annotation.Nullable;
 import org.apache.commons.lang3.Validate;
 
+import net.minecraft.block.BlockRedstoneDiode;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityHanging;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -21,6 +28,14 @@ import com.gibraltar.strait.feature.FrameFeature;
 
 public class EntityFlatFrame extends EntityItemFrame implements IEntityAdditionalSpawnData
 {
+    private static final Predicate<Entity> IS_HANGING_ENTITY = new Predicate<Entity>()
+    {
+        public boolean apply(@Nullable Entity p_apply_1_)
+        {
+            return p_apply_1_ instanceof EntityHanging;
+        }
+    };
+
     public EntityFlatFrame(World worldIn)
     {
         super(worldIn);
@@ -52,7 +67,30 @@ public class EntityFlatFrame extends EntityItemFrame implements IEntityAdditiona
     public boolean onValidSurface()
     {
         if (this.facingDirection.getAxis() == EnumFacing.Axis.Y) {
-            return true;
+            FMLLog.info("valid? axis is Y");
+            if (!this.world.getCollisionBoxes(this, this.getEntityBoundingBox()).isEmpty())
+            {
+                FMLLog.info("valid? No, there are blocks in the way");
+                return false;
+            }
+            else
+            {
+                BlockPos blockpos = this.hangingPosition.offset(this.facingDirection.getOpposite());
+                IBlockState iblockstate = this.world.getBlockState(blockpos);
+                if (!iblockstate.isSideSolid(this.world, blockpos, this.facingDirection))
+                {
+                    FMLLog.info("valid? No, side isn't solid");
+                    
+                    if (!iblockstate.getMaterial().isSolid() && !BlockRedstoneDiode.isDiode(iblockstate)) {
+                        return false;
+                    }
+                }
+
+
+
+                FMLLog.info("valid? " + this.world.getEntitiesInAABBexcluding(this, this.getEntityBoundingBox(), IS_HANGING_ENTITY).isEmpty());
+                return this.world.getEntitiesInAABBexcluding(this, this.getEntityBoundingBox(), IS_HANGING_ENTITY).isEmpty();
+            }
         }
         else
         {
@@ -118,7 +156,7 @@ public class EntityFlatFrame extends EntityItemFrame implements IEntityAdditiona
 				}
 			}
 
-            entityDropItem(new ItemStack(FrameFeature.flatFrame, 1), 0.0F);
+            entityDropItem(new ItemStack(Items.ITEM_FRAME, 1), 0.0F);
 		}
 	}
 
@@ -135,6 +173,19 @@ public class EntityFlatFrame extends EntityItemFrame implements IEntityAdditiona
 			stack.setItemFrame((EntityItemFrame) null);
 		}
 	}
+
+    @Override
+    public EntityItem entityDropItem(ItemStack stack, float offsetY)
+    {
+        EntityItem entityitem = new EntityItem(this.world, this.posX + (double)((float)this.facingDirection.getFrontOffsetX() * 0.15F), this.posY + (double)offsetY, this.posZ + (double)((float)this.facingDirection.getFrontOffsetZ() * 0.15F), stack);
+        entityitem.setDefaultPickupDelay();
+        if (facingDirection == EnumFacing.DOWN)
+        {
+            entityitem.motionY = -entityitem.motionY;
+        }
+        this.world.spawnEntity(entityitem);
+        return entityitem;
+    }
 
     @Override
     public void setEntityBoundingBox(AxisAlignedBB bb)
