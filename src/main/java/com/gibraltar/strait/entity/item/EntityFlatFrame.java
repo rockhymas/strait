@@ -36,6 +36,8 @@ public class EntityFlatFrame extends EntityItemFrame implements IEntityAdditiona
         }
     };
 
+    public EnumFacing realFacingDirection;
+
     public EntityFlatFrame(World worldIn)
     {
         super(worldIn);
@@ -56,9 +58,10 @@ public class EntityFlatFrame extends EntityItemFrame implements IEntityAdditiona
     protected void updateFacingWithBoundingBox(EnumFacing facingDirectionIn)
     {
         Validate.notNull(facingDirectionIn);
-        this.facingDirection = facingDirectionIn;
-        this.rotationYaw = facingDirection.getAxis() == EnumFacing.Axis.Y ? 0 : (float)(this.facingDirection.getHorizontalIndex() * 90);
-        this.rotationPitch = facingDirection == EnumFacing.UP ? -90.0F : 90.0F;
+        this.realFacingDirection = facingDirectionIn;
+        this.facingDirection = EnumFacing.SOUTH;
+        this.rotationYaw = realFacingDirection.getAxis() == EnumFacing.Axis.Y ? 0 : (float)(this.realFacingDirection.getHorizontalIndex() * 90);
+        this.rotationPitch = realFacingDirection == EnumFacing.UP ? -90.0F : 90.0F;
         this.prevRotationYaw = this.rotationYaw;
         this.updateBoundingBox();
     }
@@ -66,7 +69,7 @@ public class EntityFlatFrame extends EntityItemFrame implements IEntityAdditiona
     @Override
     public boolean onValidSurface()
     {
-        if (this.facingDirection.getAxis() == EnumFacing.Axis.Y) {
+        if (this.realFacingDirection.getAxis() == EnumFacing.Axis.Y) {
             FMLLog.info("valid? axis is Y");
             if (!this.world.getCollisionBoxes(this, this.getEntityBoundingBox()).isEmpty())
             {
@@ -75,9 +78,9 @@ public class EntityFlatFrame extends EntityItemFrame implements IEntityAdditiona
             }
             else
             {
-                BlockPos blockpos = this.hangingPosition.offset(this.facingDirection.getOpposite());
+                BlockPos blockpos = this.hangingPosition.offset(this.realFacingDirection.getOpposite());
                 IBlockState iblockstate = this.world.getBlockState(blockpos);
-                if (!iblockstate.isSideSolid(this.world, blockpos, this.facingDirection))
+                if (!iblockstate.isSideSolid(this.world, blockpos, this.realFacingDirection))
                 {
                     FMLLog.info("valid? No, side isn't solid");
                     
@@ -101,19 +104,19 @@ public class EntityFlatFrame extends EntityItemFrame implements IEntityAdditiona
     @Override
     protected void updateBoundingBox()
     {
-        if (this.facingDirection == null)
+        if (this.realFacingDirection == null)
         {
             return;
         }
-        else if (this.facingDirection.getAxis() == EnumFacing.Axis.Y)
+        else if (this.realFacingDirection.getAxis() == EnumFacing.Axis.Y)
         {
             double d0 = (double)this.hangingPosition.getX() + 0.5D;
             double d1 = (double)this.hangingPosition.getY() + 0.5D;
             double d2 = (double)this.hangingPosition.getZ() + 0.5D;
-            d1 = d1 - (double)this.facingDirection.getFrontOffsetY() * 0.46875D;
+            d1 = d1 - (double)this.realFacingDirection.getFrontOffsetY() * 0.46875D;
 
             double d6 = (double)this.getHeightPixels();
-            double d7 = -(double)this.facingDirection.getFrontOffsetY();
+            double d7 = -(double)this.realFacingDirection.getFrontOffsetY();
             double d8 = (double)this.getHeightPixels();
 
             d6 = d6 / 32.0D;
@@ -177,9 +180,9 @@ public class EntityFlatFrame extends EntityItemFrame implements IEntityAdditiona
     @Override
     public EntityItem entityDropItem(ItemStack stack, float offsetY)
     {
-        EntityItem entityitem = new EntityItem(this.world, this.posX + (double)((float)this.facingDirection.getFrontOffsetX() * 0.15F), this.posY + (double)offsetY, this.posZ + (double)((float)this.facingDirection.getFrontOffsetZ() * 0.15F), stack);
+        EntityItem entityitem = new EntityItem(this.world, this.posX + (double)((float)this.realFacingDirection.getFrontOffsetX() * 0.15F), this.posY + (double)offsetY, this.posZ + (double)((float)this.realFacingDirection.getFrontOffsetZ() * 0.15F), stack);
         entityitem.setDefaultPickupDelay();
-        if (facingDirection == EnumFacing.DOWN)
+        if (realFacingDirection == EnumFacing.DOWN)
         {
             entityitem.motionY = -entityitem.motionY;
         }
@@ -196,18 +199,18 @@ public class EntityFlatFrame extends EntityItemFrame implements IEntityAdditiona
     public void writeEntityToNBT(NBTTagCompound compound)
     {
         super.writeEntityToNBT(compound);
-        compound.setByte("Facing", (byte)this.facingDirection.getIndex());
+        compound.setByte("RealFacing", (byte)this.realFacingDirection.getIndex());
     }
 
     public void readEntityFromNBT(NBTTagCompound compound)
     {
         super.readEntityFromNBT(compound);
-        this.updateFacingWithBoundingBox(EnumFacing.getFront(compound.getByte("Facing")));
+        this.updateFacingWithBoundingBox(EnumFacing.getFront(compound.getByte("RealFacing")));
     }
 
     @Override
 	public void writeSpawnData(ByteBuf buffer) {
-		buffer.writeShort(facingDirection.getIndex());
+		buffer.writeShort(realFacingDirection.getIndex());
 	}
 
 	@Override
