@@ -22,6 +22,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.tileentity.RenderItemFrame;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.init.Items;
@@ -38,7 +39,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import com.gibraltar.strait.entity.item.EntityFlatFrame;
 
 @SideOnly(Side.CLIENT)
-public class RenderFlatFrame extends Render<EntityFlatFrame>
+public class RenderFlatFrame extends RenderItemFrame
 {
     private static final ResourceLocation MAP_BACKGROUND_TEXTURES = new ResourceLocation("textures/map/map_background.png");
     private final Minecraft mc = Minecraft.getMinecraft();
@@ -48,26 +49,28 @@ public class RenderFlatFrame extends Render<EntityFlatFrame>
 
     public RenderFlatFrame(RenderManager renderManagerIn)
     {
-        super(renderManagerIn);
+        super(renderManagerIn, Minecraft.getMinecraft().getRenderItem());
         this.itemRenderer = mc.getRenderItem();
     }
 
-    public void doRender(EntityFlatFrame entity, double x, double y, double z, float entityYaw, float partialTicks)
+    @Override
+    public void doRender(EntityItemFrame entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
+        EntityFlatFrame entityFF = (EntityFlatFrame) entity;
         GlStateManager.pushMatrix();
-        BlockPos blockpos = entity.getHangingPosition();
-        double d0 = (double)blockpos.getX() - entity.posX + x;
-        double d1 = (double)blockpos.getY() - entity.posY + y;
-        double d2 = (double)blockpos.getZ() - entity.posZ + z;
+        BlockPos blockpos = entityFF.getHangingPosition();
+        double d0 = (double)blockpos.getX() - entityFF.posX + x;
+        double d1 = (double)blockpos.getY() - entityFF.posY + y;
+        double d2 = (double)blockpos.getZ() - entityFF.posZ + z;
         GlStateManager.translate(d0 + 0.5D, d1 + 0.5D, d2 + 0.5D);
-        GlStateManager.rotate(entity.realFacingDirection == EnumFacing.DOWN ? -90.0F : 90.0F, 1.0F, 0.0F, 0.0F);
-        GlStateManager.rotate(entity.realFacingDirection == EnumFacing.UP ? 180.0F : 0.0F, 0.0F, 0.0F, 1.0F);
+        GlStateManager.rotate(entityFF.realFacingDirection == EnumFacing.DOWN ? -90.0F : 90.0F, 1.0F, 0.0F, 0.0F);
+        GlStateManager.rotate(entityFF.realFacingDirection == EnumFacing.UP ? 180.0F : 0.0F, 0.0F, 0.0F, 1.0F);
         this.renderManager.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         BlockRendererDispatcher blockrendererdispatcher = this.mc.getBlockRendererDispatcher();
         ModelManager modelmanager = blockrendererdispatcher.getBlockModelShapes().getModelManager();
         IBakedModel ibakedmodel;
 
-        if (!entity.getDisplayedItem().isEmpty() && entity.getDisplayedItem().getItem() == Items.FILLED_MAP)
+        if (!entityFF.getDisplayedItem().isEmpty() && entityFF.getDisplayedItem().getItem() == Items.FILLED_MAP)
         {
             ibakedmodel = modelmanager.getModel(this.mapModel);
         }
@@ -82,7 +85,7 @@ public class RenderFlatFrame extends Render<EntityFlatFrame>
         if (this.renderOutlines)
         {
             GlStateManager.enableColorMaterial();
-            GlStateManager.enableOutlineMode(this.getTeamColor(entity));
+            GlStateManager.enableOutlineMode(this.getTeamColor(entityFF));
         }
 
         blockrendererdispatcher.getBlockModelRenderer().renderModelBrightnessColor(ibakedmodel, 1.0F, 1.0F, 1.0F, 1.0F);
@@ -95,21 +98,22 @@ public class RenderFlatFrame extends Render<EntityFlatFrame>
 
         GlStateManager.popMatrix();
         GlStateManager.translate(0.0F, 0.0F, 0.4375F);
-        this.renderItem(entity);
+        this.renderItem(entityFF);
         GlStateManager.popMatrix();
-        this.renderName(entity,
-            x + (double)((float)entity.realFacingDirection.getFrontOffsetX() * 0.3F),
-            y - (entity.realFacingDirection == EnumFacing.DOWN ? 1.25D : 0.25D),
-            z + (double)((float)entity.realFacingDirection.getFrontOffsetZ() * 0.3F));
+        this.renderName(entityFF,
+            x + (double)((float)entityFF.realFacingDirection.getFrontOffsetX() * 0.3F),
+            y - (entityFF.realFacingDirection == EnumFacing.DOWN ? 1.25D : 0.25D),
+            z + (double)((float)entityFF.realFacingDirection.getFrontOffsetZ() * 0.3F));
     }
 
+    @Override
     @Nullable
-    protected ResourceLocation getEntityTexture(EntityFlatFrame entity)
+    protected ResourceLocation getEntityTexture(EntityItemFrame entity)
     {
         return null;
     }
 
-    private void renderItem(EntityFlatFrame itemFrame)
+    private void renderItem(EntityItemFrame itemFrame)
     {
         ItemStack itemstack = itemFrame.getDisplayedItem();
 
@@ -130,8 +134,8 @@ public class RenderFlatFrame extends Render<EntityFlatFrame>
 
             GlStateManager.rotate((float)i * 360.0F / 8.0F, 0.0F, 0.0F, 1.0F);
 
-            //net.minecraftforge.client.event.RenderItemInFrameEvent event = new net.minecraftforge.client.event.RenderItemInFrameEvent(itemFrame, this);
-            if (/*!net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)*/ true)
+            net.minecraftforge.client.event.RenderItemInFrameEvent event = new net.minecraftforge.client.event.RenderItemInFrameEvent(itemFrame, this);
+            if (!net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event))
             {
                 if (item instanceof net.minecraft.item.ItemMap)
                 {
@@ -164,7 +168,8 @@ public class RenderFlatFrame extends Render<EntityFlatFrame>
         }
     }
 
-    protected void renderName(EntityFlatFrame entity, double x, double y, double z)
+    @Override
+    protected void renderName(EntityItemFrame entity, double x, double y, double z)
     {
         if (Minecraft.isGuiEnabled() && !entity.getDisplayedItem().isEmpty() && entity.getDisplayedItem().hasDisplayName() && this.renderManager.pointedEntity == entity)
         {

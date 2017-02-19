@@ -16,8 +16,8 @@ import net.minecraftforge.fml.common.FMLLog;
 
 import com.gibraltar.strait.entity.item.EntityFlatFrame;
 
-public class RenderFlatFrameFactory implements IRenderFactory<EntityFlatFrame> {
-    public Render<EntityFlatFrame> createRenderFor(RenderManager manager) {
+public class RenderFlatFrameFactory implements IRenderFactory<EntityItemFrame> {
+    public Render<EntityItemFrame> createRenderFor(RenderManager manager) {
         return new RenderFlatFrame(manager);
     }
 }
