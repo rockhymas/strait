@@ -10,13 +10,17 @@ package com.gibraltar.strait.proxy;
 
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-public class ClientProxy extends CommonProxy {
+public class ClientProxy extends CommonProxy
+{
     @Override
-    public void preInit(FMLPreInitializationEvent event) {
+    public void preInit(FMLPreInitializationEvent event)
+    {
         super.preInit(event);
 
-        forEachFeature(feature -> {
-            if (feature.enabled) {
+        forEachFeature(feature ->
+        {
+            if (feature.enabled)
+            {
                 feature.preInitClient(event);
             }
         });

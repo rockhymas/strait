@@ -8,7 +8,8 @@
  */
 package com.gibraltar.strait;
 
-public class Reference {
+public class Reference
+{
     public static final String MODID = "strait";
     public static final String MOD_NAME = "Strait";
     public static final String VERSION = "GRADLE:VERSION";

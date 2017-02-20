@@ -16,36 +16,45 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.FMLLog;
 
-public class Feature {
+public class Feature
+{
 	public boolean enabled;
     public String name;
 
-    public Feature() {
+    public Feature()
+	{
         name = getClass().getSimpleName().replaceAll("Feature", "").toLowerCase();
     }
 
-	public void preInit(FMLPreInitializationEvent event) {
+	public void preInit(FMLPreInitializationEvent event)
+	{
 		FMLLog.info("pre init");
-		if (hasSubscriptions()) {
+		if (hasSubscriptions())
+		{
 			FMLLog.info("subscribing!");
 			MinecraftForge.EVENT_BUS.register(this);
 		}
 	}
 
-	public void preInitClient(FMLPreInitializationEvent event) {
+	public void preInitClient(FMLPreInitializationEvent event)
+	{
 	}
 
-	public void init(FMLInitializationEvent event) {
+	public void init(FMLInitializationEvent event)
+	{
 	}
 
-	public void postInit(FMLPostInitializationEvent event) {
+	public void postInit(FMLPostInitializationEvent event)
+	{
 	}
 
-	protected boolean hasSubscriptions() {
+	protected boolean hasSubscriptions()
+	{
 		return false;
 	}
 
-	public void loadConfig(Configuration config) {
+	public void loadConfig(Configuration config)
+	{
         Property prop = config.get("_features", name, true);
         enabled = prop.getBoolean(true);
 	}

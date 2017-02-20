@@ -35,66 +35,65 @@ import com.gibraltar.strait.entity.item.EntityFlatFrame;
 import com.gibraltar.strait.renderer.RenderFlatFrameFactory;
 import com.gibraltar.strait.strait;
 
-public class FrameFeature extends Feature {
+public class FrameFeature extends Feature
+{
 
     @Override
-	public void preInit(FMLPreInitializationEvent event) {
+	public void preInit(FMLPreInitializationEvent event)
+    {
 		super.preInit(event);
         EntityRegistry.registerModEntity(new ResourceLocation("strait:flat_frame"), EntityFlatFrame.class, "strait:flat_frame", 1, strait.instance, 256, 64, false);
 	}
 
     @Override
-	public void preInitClient(FMLPreInitializationEvent event) {
+	public void preInitClient(FMLPreInitializationEvent event)
+    {
 		super.preInitClient(event);
         RenderingRegistry.registerEntityRenderingHandler(EntityFlatFrame.class, new RenderFlatFrameFactory());
 	}
 
     @Override
-    protected boolean hasSubscriptions() {
+    protected boolean hasSubscriptions()
+    {
         return true;
     } 
 
     @SubscribeEvent
-    public void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
+    public void onRightClickBlock(PlayerInteractEvent.RightClickBlock event)
+    {
         ItemStack itemstack = event.getItemStack();
         EnumFacing facing = event.getFace();
         BlockPos blockpos = event.getPos().offset(facing);
         World world = event.getWorld();
         EntityPlayer player = event.getEntityPlayer();
 
-        FMLLog.info("on right click");
-        if (event.getSide() == Side.CLIENT) {
+        if (event.getSide() == Side.CLIENT)
+        {
             return;
         }
 
-        FMLLog.info("on server side");
-        if (!player.canPlayerEdit(blockpos, facing, itemstack)) {
+        if (!player.canPlayerEdit(blockpos, facing, itemstack))
+        {
             return;
         }
 
-        FMLLog.info("player can edit");
-        if (facing.getAxis() != EnumFacing.Axis.Y) {
+        if (facing.getAxis() != EnumFacing.Axis.Y)
+        {
             return;
         }
 
-        FMLLog.info("facing up or down");
-        if (itemstack.getItem() != Items.ITEM_FRAME) {
+        if (itemstack.getItem() != Items.ITEM_FRAME)
+        {
             return;
         }
 
-        FMLLog.info("item is item frame");
         EntityHanging entityhanging = new EntityFlatFrame(world, blockpos, facing);
-        FMLLog.info("facing a side, bounding box: " + entityhanging.getEntityBoundingBox());
 
-        FMLLog.info("other blocks: " + world.getCollisionBoxes(entityhanging, entityhanging.getEntityBoundingBox()).isEmpty());
         if (entityhanging != null && entityhanging.onValidSurface())
         {
-            FMLLog.info("valid surface");
             if (!world.isRemote)
             {
-                FMLLog.info("play sound, spawn entity");
                 entityhanging.playPlaceSound();
-                FMLLog.info("entity class: " + entityhanging.getClass());
                 world.spawnEntity(entityhanging);
             }
 

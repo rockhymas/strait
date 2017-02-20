@@ -1,3 +1,11 @@
+/**
+ * This class was created by Rock Hymas. It's distributed as
+ * part of the Strait Mod. Get the Source Code in github:
+ * https://github.com/rockhymas/strait
+ *
+ * Strait is Open Source and distributed under the
+ * CC-BY-NC-SA 4.0 License: https://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
 package com.gibraltar.strait.entity.item;
 
 import com.google.common.base.Predicate;
@@ -69,7 +77,8 @@ public class EntityFlatFrame extends EntityItemFrame implements IEntityAdditiona
     @Override
     public boolean onValidSurface()
     {
-        if (this.realFacingDirection.getAxis() == EnumFacing.Axis.Y) {
+        if (this.realFacingDirection.getAxis() == EnumFacing.Axis.Y)
+        {
             if (!this.world.getCollisionBoxes(this, this.getEntityBoundingBox()).isEmpty())
             {
                 return false;
@@ -80,7 +89,8 @@ public class EntityFlatFrame extends EntityItemFrame implements IEntityAdditiona
                 IBlockState iblockstate = this.world.getBlockState(blockpos);
                 if (!iblockstate.isSideSolid(this.world, blockpos, this.realFacingDirection))
                 {                    
-                    if (!iblockstate.getMaterial().isSolid() && !BlockRedstoneDiode.isDiode(iblockstate)) {
+                    if (!iblockstate.getMaterial().isSolid() && !BlockRedstoneDiode.isDiode(iblockstate))
+                    {
                         return false;
                     }
                 }

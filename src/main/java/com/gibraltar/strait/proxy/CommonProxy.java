@@ -20,7 +20,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 
-public class CommonProxy {
+public class CommonProxy
+{
 	public static Configuration config;
 	public static File configFile;
     protected ArrayList features;
@@ -37,12 +38,15 @@ public class CommonProxy {
 
         forEachFeature(feature -> feature.loadConfig(config));
 
-        if (config.hasChanged()) {
+        if (config.hasChanged())
+        {
             config.save();
         }
 
-        forEachFeature(feature -> {
-            if (feature.enabled) {
+        forEachFeature(feature ->
+        {
+            if (feature.enabled)
+            {
                 feature.preInit(event);
             }
         });
@@ -59,15 +63,19 @@ public class CommonProxy {
         });
     }
 
-    protected void forEachFeature(Consumer<Feature> action) {
+    protected void forEachFeature(Consumer<Feature> action)
+    {
 	    features.forEach(action);
     }
 
-    public boolean isFeatureEnabled(Class clazz) {
+    public boolean isFeatureEnabled(Class clazz)
+    {
         boolean enabled = false;
-        for (int i = 0; i < features.size(); i++) {
+        for (int i = 0; i < features.size(); i++)
+        {
             Feature feature = (Feature)features.get(i);
-            if (clazz.isInstance(feature)) {
+            if (clazz.isInstance(feature))
+            {
                 enabled = feature.enabled;
             }
         }
