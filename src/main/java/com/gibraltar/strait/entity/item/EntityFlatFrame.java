@@ -79,15 +79,15 @@ public class EntityFlatFrame extends EntityItemFrame implements IEntityAdditiona
     {
         if (this.realFacingDirection.getAxis() == EnumFacing.Axis.Y)
         {
-            if (!this.world.getCollisionBoxes(this, this.getEntityBoundingBox()).isEmpty())
+            if (!this.worldObj.getCollisionBoxes(this, this.getEntityBoundingBox()).isEmpty())
             {
                 return false;
             }
             else
             {
                 BlockPos blockpos = this.hangingPosition.offset(this.realFacingDirection.getOpposite());
-                IBlockState iblockstate = this.world.getBlockState(blockpos);
-                if (!iblockstate.isSideSolid(this.world, blockpos, this.realFacingDirection))
+                IBlockState iblockstate = this.worldObj.getBlockState(blockpos);
+                if (!iblockstate.isSideSolid(this.worldObj, blockpos, this.realFacingDirection))
                 {                    
                     if (!iblockstate.getMaterial().isSolid() && !BlockRedstoneDiode.isDiode(iblockstate))
                     {
@@ -95,7 +95,7 @@ public class EntityFlatFrame extends EntityItemFrame implements IEntityAdditiona
                     }
                 }
 
-                return this.world.getEntitiesInAABBexcluding(this, this.getEntityBoundingBox(), IS_HANGING_ENTITY).isEmpty();
+                return this.worldObj.getEntitiesInAABBexcluding(this, this.getEntityBoundingBox(), IS_HANGING_ENTITY).isEmpty();
             }
         }
         else
@@ -168,7 +168,7 @@ public class EntityFlatFrame extends EntityItemFrame implements IEntityAdditiona
 
 	private void removeFrameFromMap(ItemStack stack)
     {
-		if(!stack.isEmpty())
+		if(stack != null && stack.stackSize > 0)
         {
 			if(stack.getItem() instanceof ItemMap)
             {
@@ -183,13 +183,13 @@ public class EntityFlatFrame extends EntityItemFrame implements IEntityAdditiona
     @Override
     public EntityItem entityDropItem(ItemStack stack, float offsetY)
     {
-        EntityItem entityitem = new EntityItem(this.world, this.posX + (double)((float)this.realFacingDirection.getFrontOffsetX() * 0.15F), this.posY + (double)offsetY, this.posZ + (double)((float)this.realFacingDirection.getFrontOffsetZ() * 0.15F), stack);
+        EntityItem entityitem = new EntityItem(this.worldObj, this.posX + (double)((float)this.realFacingDirection.getFrontOffsetX() * 0.15F), this.posY + (double)offsetY, this.posZ + (double)((float)this.realFacingDirection.getFrontOffsetZ() * 0.15F), stack);
         entityitem.setDefaultPickupDelay();
         if (realFacingDirection == EnumFacing.DOWN)
         {
             entityitem.motionY = -entityitem.motionY;
         }
-        this.world.spawnEntity(entityitem);
+        this.worldObj.spawnEntityInWorld(entityitem);
         return entityitem;
     }
 

@@ -70,7 +70,7 @@ public class RenderFlatFrame extends RenderItemFrame
         ModelManager modelmanager = blockrendererdispatcher.getBlockModelShapes().getModelManager();
         IBakedModel ibakedmodel;
 
-        if (!entityFF.getDisplayedItem().isEmpty() && entityFF.getDisplayedItem().getItem() == Items.FILLED_MAP)
+        if (entityFF.getDisplayedItem() != null && entityFF.getDisplayedItem().getItem() == Items.FILLED_MAP)
         {
             ibakedmodel = modelmanager.getModel(this.mapModel);
         }
@@ -117,11 +117,11 @@ public class RenderFlatFrame extends RenderItemFrame
     {
         ItemStack itemstack = itemFrame.getDisplayedItem();
 
-        if (!itemstack.isEmpty())
+        if (itemstack != null && itemstack.stackSize > 0)
         {
-            EntityItem entityitem = new EntityItem(itemFrame.world, 0.0D, 0.0D, 0.0D, itemstack);
+            EntityItem entityitem = new EntityItem(itemFrame.worldObj, 0.0D, 0.0D, 0.0D, itemstack);
             Item item = entityitem.getEntityItem().getItem();
-            entityitem.getEntityItem().setCount(1);
+            entityitem.getEntityItem().stackSize = 1;
             entityitem.hoverStart = 0.0F;
             GlStateManager.pushMatrix();
             GlStateManager.disableLighting();
@@ -144,7 +144,7 @@ public class RenderFlatFrame extends RenderItemFrame
                     float f = 0.0078125F;
                     GlStateManager.scale(0.0078125F, 0.0078125F, 0.0078125F);
                     GlStateManager.translate(-64.0F, -64.0F, 0.0F);
-                    MapData mapdata = Items.FILLED_MAP.getMapData(entityitem.getEntityItem(), itemFrame.world);
+                    MapData mapdata = Items.FILLED_MAP.getMapData(entityitem.getEntityItem(), itemFrame.worldObj);
                     GlStateManager.translate(0.0F, 0.0F, -1.0F);
 
                     if (mapdata != null)
@@ -171,7 +171,8 @@ public class RenderFlatFrame extends RenderItemFrame
     @Override
     protected void renderName(EntityItemFrame entity, double x, double y, double z)
     {
-        if (Minecraft.isGuiEnabled() && !entity.getDisplayedItem().isEmpty() && entity.getDisplayedItem().hasDisplayName() && this.renderManager.pointedEntity == entity)
+
+        if (Minecraft.isGuiEnabled() && entity.getDisplayedItem() != null && entity.getDisplayedItem().hasDisplayName() && this.renderManager.pointedEntity == entity)
         {
             double d0 = entity.getDistanceSqToEntity(this.renderManager.renderViewEntity);
             float f = entity.isSneaking() ? 32.0F : 64.0F;

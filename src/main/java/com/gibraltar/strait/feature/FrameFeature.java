@@ -42,7 +42,7 @@ public class FrameFeature extends Feature
 	public void preInit(FMLPreInitializationEvent event)
     {
 		super.preInit(event);
-        EntityRegistry.registerModEntity(new ResourceLocation("strait:flat_frame"), EntityFlatFrame.class, "strait:flat_frame", 1, strait.instance, 256, 64, false);
+        EntityRegistry.registerModEntity(EntityFlatFrame.class, "strait:flat_frame", 1, strait.instance, 256, 64, false);
 	}
 
     @Override
@@ -94,10 +94,10 @@ public class FrameFeature extends Feature
             if (!world.isRemote)
             {
                 entityhanging.playPlaceSound();
-                world.spawnEntity(entityhanging);
+                world.spawnEntityInWorld(entityhanging);
             }
 
-            itemstack.shrink(1);
+            itemstack.stackSize--;
         }
     }
 }
