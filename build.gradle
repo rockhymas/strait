@@ -23,12 +23,12 @@ plugins {
     id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 */
-version = "0.1-1"
+version = "0.1-2"
 group = "com.gibraltar.strait" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "strait"
 
 minecraft {
-    version = "1.10-12.18.0.1986-1.10.0"
+    version = "1.9.4-12.17.0.1976"
     runDir = "run"
     
     // the mappings can be changed at any time, and must be in the following format.
