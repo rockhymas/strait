@@ -62,6 +62,12 @@ public class FrameFeature extends Feature
     public void onRightClickBlock(PlayerInteractEvent.RightClickBlock event)
     {
         ItemStack itemstack = event.getItemStack();
+        
+        if (itemstack == null)
+        {
+            return;
+        }
+	
         EnumFacing facing = event.getFace();
         BlockPos blockpos = event.getPos().offset(facing);
         World world = event.getWorld();
@@ -97,7 +103,10 @@ public class FrameFeature extends Feature
                 world.spawnEntityInWorld(entityhanging);
             }
 
-            itemstack.stackSize--;
+            if (!player.capabilities.isCreativeMode)
+            {
+                itemstack.stackSize--;
+            }
         }
     }
 }
