@@ -103,7 +103,10 @@ public class FrameFeature extends Feature
                 world.spawnEntityInWorld(entityhanging);
             }
 
-            itemstack.stackSize--;
+            if (!player.capabilities.isCreativeMode)
+            {
+                itemstack.stackSize--;
+            }
         }
     }
 }
