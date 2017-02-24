@@ -99,7 +99,7 @@ public class RenderFlatFrame extends RenderItemFrame
 
         GlStateManager.popMatrix();
         GlStateManager.translate(0.0F, 0.0F, 0.4375F);
-        boolean flipItem = entityFF.realFacingDirection == EnumFacing.DOWN && !entityFF.getDisplayedItem().isEmpty() && entityFF.getDisplayedItem().getItem() instanceof ItemCompass;
+        boolean flipItem = entityFF.realFacingDirection == EnumFacing.UP && entityFF.getDisplayedItem() != null && entityFF.getDisplayedItem().getItem() instanceof ItemCompass;
         GlStateManager.rotate(flipItem ? -180.0F : 0.0F, 0.0F, 1.0F, 0.0F);
         this.renderItem(entityFF);
         GlStateManager.popMatrix();
