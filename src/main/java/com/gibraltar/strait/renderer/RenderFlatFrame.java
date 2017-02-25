@@ -27,6 +27,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemCompass;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
@@ -98,6 +99,8 @@ public class RenderFlatFrame extends RenderItemFrame
 
         GlStateManager.popMatrix();
         GlStateManager.translate(0.0F, 0.0F, 0.4375F);
+        boolean flipItem = entityFF.realFacingDirection == EnumFacing.UP && entityFF.getDisplayedItem() != null && entityFF.getDisplayedItem().getItem() instanceof ItemCompass;
+        GlStateManager.rotate(flipItem ? -180.0F : 0.0F, 0.0F, 1.0F, 0.0F);
         this.renderItem(entityFF);
         GlStateManager.popMatrix();
         this.renderName(entityFF,
