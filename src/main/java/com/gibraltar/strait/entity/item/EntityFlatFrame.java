@@ -45,6 +45,7 @@ public class EntityFlatFrame extends EntityItemFrame implements IEntityAdditiona
     };
 
     public EnumFacing realFacingDirection;
+    private float itemDropChance = 1.0F;
 
     public EntityFlatFrame(World worldIn)
     {
@@ -163,6 +164,13 @@ public class EntityFlatFrame extends EntityItemFrame implements IEntityAdditiona
 			}
 
             entityDropItem(new ItemStack(Items.ITEM_FRAME, 1), 0.0F);
+
+            if (!itemstack.isEmpty() && this.rand.nextFloat() < this.itemDropChance)
+            {
+                itemstack = itemstack.copy();
+                this.removeFrameFromMap(itemstack);
+                this.entityDropItem(itemstack, 0.0F);
+            }
 		}
 	}
 
@@ -209,6 +217,15 @@ public class EntityFlatFrame extends EntityItemFrame implements IEntityAdditiona
     {
         super.readEntityFromNBT(compound);
         this.updateFacingWithBoundingBox(EnumFacing.getFront(compound.getByte("RealFacing")));
+        
+        NBTTagCompound nbttagcompound = compound.getCompoundTag("Item");
+        if (nbttagcompound != null && !nbttagcompound.hasNoTags())
+        {
+            if (compound.hasKey("ItemDropChance", 99))
+            {
+                this.itemDropChance = compound.getFloat("ItemDropChance");
+            }
+        }
     }
 
     @Override
